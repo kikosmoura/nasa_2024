@@ -1,0 +1,349 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex-grow: 1;
+    position: relative;
+}
+
+#map {
+    height: 100%;
+}
+
+/* Estilo para o elemento de busca centralizado */
+#controls {
+    position: absolute;
+    top: 20px; /* Distância do topo */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    z-index: 1000; /* Coloca acima do mapa */
+}
+
+#address {
+    width: 300px; /* Ajuste a largura conforme necessário */
+    padding: 10px;
+    margin-right: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#search {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+#search:hover {
+    background-color: #45a049;
+}
+
+/* Estilo para a escala de cores */
+#color-scale {
+    position: absolute;
+    bottom: 600px;
+    right: 20px;
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    border-radius: 5px;
+    text-align: center;
+}
+
+#color-bar {
+    width: 300px;
+    height: 35px;
+    background: linear-gradient(to right, #000096, #0064ff, #00b4ff, #33db80, #9beb4a, #ffeb00, #ffb300, #ff6400, #eb1e00, #af0000);
+    margin-bottom: 5px;
+}
+
+#color-labels {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Estilo para o toggle switch */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 20px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+/* Estilo para o botão de camadas */
+#layer-button {
+    position: absolute;
+    bottom: 110px; /* Ajuste para posicionar acima da escala de cores */
+    left: 20px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+#layer-button img {
+    width: 40px; /* Tamanho do ícone */
+    height: 40px;
+}
+
+/* Estilo para o menu suspenso */
+.layer-menu {
+    display: none; /* Inicialmente escondido */
+    position: absolute;
+    bottom: 140px; /* Ajustar para posicionar acima do botão */
+    left: 20px;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    border-radius: 5px;
+    z-index: 1000; /* Colocar acima de outros elementos */
+}
+
+.layer-menu .toggle-container {
+    margin-bottom: 10px;
+}
+
+/* Estilo para o botão de ponto */
+#point-button {
+    position: absolute;
+    bottom: 220px; /* Ajuste para posicionar acima do menu de camadas */
+    left: 20px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+#point-button img {
+    width: 40px; /* Tamanho do ícone */
+    height: 40px;
+}
+
+/* Estilo para o botão de opacity */
+#opacity-button {
+    position: absolute;
+    bottom: 165px; /* Ajuste para posicionar acima do menu de camadas */
+    left: 20px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+#opacity-button img {
+    width: 40px; /* Tamanho do ícone */
+    height: 40px;
+}
+
+/* styles.css */
+
+.opacity-controls {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 100px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Garantir que fique acima de outros elementos */
+}
+
+/* Opcional: Estilos adicionais para sliders e labels */
+.opacity-container {
+    margin-bottom: 10px;
+}
+
+.opacity-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.opacity-container input[type="range"] {
+    width: 100%;
+}
+
+
+/* Estilo para a nova escala de cores */
+#color-scale-geo {
+    position: absolute;
+    bottom: 500px; /* Ajuste conforme necessário para posicionar corretamente */
+    right: 20px;
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    border-radius: 5px;
+    text-align: center;
+}
+
+#color-bar-geo {
+    width: 300px;
+    height: 35px;
+    background: linear-gradient(to right, 
+        #f7fcf5 0%, 
+        #eafaf1 8.33%, 
+        #d5f5e2 16.66%, 
+        #bfeed2 25%, 
+        #a9e8c3 33.33%, 
+        #93e2b3 41.66%, 
+        #7ddba3 50%, 
+        #66d493 58.33%, 
+        #4fcc83 66.66%, 
+        #38c573 75%, 
+        #21be63 83.33%, 
+        #0ab653 91.66%, 
+        #009e47 100%);
+    margin-bottom: 5px;
+}
+
+#color-labels-geo {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Estilo para a escala de cores de precipitação */
+#color-scale-precipitation {
+    position: absolute;
+    bottom: 400px; /* Ajuste conforme necessário para posicionar corretamente */
+    right: 20px;
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    border-radius: 5px;
+    text-align: center;
+}
+
+#color-bar-precipitation {
+    width: 300px;
+    height: 35px;
+    background: linear-gradient(to right, 
+        #EFF3FF 0%, 
+        #BDD7E7 4%, 
+        #6BAED6 8%, 
+        #4292C6 12%, 
+        #2171B5 16%, 
+        #08519C 20%, 
+        #08306B 24%, 
+        #041C43 28%);
+    margin-bottom: 5px;
+}
+
+#color-labels-precipitation {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Estilo para a escala de cores categórica */
+#color-scale-categorical {
+    position: absolute;
+    bottom: 210px; /* Ajuste conforme necessário */
+    right: 20px;
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    border-radius: 5px;
+    text-align: left;
+    width: 300px; /* Ajuste conforme necessário */
+    max-height: 150px; /* Define uma altura máxima */
+    overflow-y: auto; /* Adiciona rolagem vertical se necessário */
+}
+
+.color-entry {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 3px;
+    color: #fff; /* Texto branco para melhor contraste */
+}
+
+.color-entry:hover {
+    opacity: 0.8; /* Efeito hover para interatividade */
+}
+
+/* Adicione uma barra de rolagem estilizada (opcional) */
+#color-labels-categorical {
+    scrollbar-width: thin; /* Para Firefox */
+    scrollbar-color: #888 #f1f1f1; /* Para Firefox */
+}
+
+#color-labels-categorical::-webkit-scrollbar {
+    width: 8px; /* Largura da barra de rolagem */
+}
+
+#color-labels-categorical::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Cor de fundo da barra de rolagem */
+}
+
+#color-labels-categorical::-webkit-scrollbar-thumb {
+    background-color: #888; /* Cor da barra de rolagem */
+    border-radius: 10px; /* Arredondar a barra de rolagem */
+}
+
+#color-labels-categorical::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Cor da barra de rolagem ao passar o mouse */
+}
