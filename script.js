@@ -15,7 +15,8 @@ let isPointMode = false; // Variável para controlar o modo de ponto
 //const wmsUrl = 'http://localhost:3000/geoserver/wms';
 //const wmsUrl = 'http://localhost:8080/geoserver/wms'; // URL do GeoServer
 //const wmsUrl = 'https://c243-2804-7f0-b2c0-3493-9355-7ab5-acbc-2465.ngrok-free.app/geoserver/wms';
-const wmsUrl = 'https://f5dc5b632501f5b2140dbeac3a12f431.serveo.net/geoserver/wms';
+//const wmsUrl = 'https://f5dc5b632501f5b2140dbeac3a12f431.serveo.net/geoserver/wms';
+const wmsUrl =  'https://geoservernasa2024.sa.ngrok.io/geoserver/wms'
 
 
 function initMap() {
@@ -165,8 +166,8 @@ function showMarkerInfo(position, markerInstance) {
     //const apiUrl = `https://c243-2804-7f0-b2c0-3493-9355-7ab5-acbc-2465.ngrok-free.app/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
     //const apiUrl = `https://d347-2804-7f0-b2c0-3493-3049-ec10-7c65-1a3.ngrok-free.app/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
 
-    const apiUrl = `https://302061e7e373f7295bd0bca64244cf26.serveo.net/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
-
+    //const apiUrl = `https://1fff7e0bdb827a62ce2bc89fe3e7c90f.serveo.net/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
+    const apiUrl = `https://meuapinasa2024.sa.ngrok.io/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
     
 
 
