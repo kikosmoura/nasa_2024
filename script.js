@@ -10,14 +10,10 @@ let elevacaoLayer; // Variável para a camada elevacao_cropped
 let precipitacaoLayer; // Variável para a camada de precipitação
 let hospitalsMarkers = []; // Armazenar os marcadores de hospitais
 let isPointMode = false; // Variável para controlar o modo de ponto
+let floodDataLayer; // Variável para a camada flood_data:limite_rs
 
 // URL do GeoServer via ngrok com HTTPS
-//const wmsUrl = 'http://localhost:3000/geoserver/wms';
-//const wmsUrl = 'http://localhost:8080/geoserver/wms'; // URL do GeoServer
-//const wmsUrl = 'https://c243-2804-7f0-b2c0-3493-9355-7ab5-acbc-2465.ngrok-free.app/geoserver/wms';
-//const wmsUrl = 'https://f5dc5b632501f5b2140dbeac3a12f431.serveo.net/geoserver/wms';
 const wmsUrl =  'https://geoservernasa2024.sa.ngrok.io/geoserver/wms'
-
 
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
@@ -116,6 +112,15 @@ function initMap() {
             console.error('Erro ao carregar GeoJSON:', error);
         });
 
+    // Inicializar a nova camada WMS: flood_data:limite_rs
+    floodDataLayer = new google.maps.ImageMapType({
+        getTileUrl: getWmsUrl('limite_rs', 'styles_limites_rs'), // 'limite_rs_outline_style' é o estilo definido no GeoServer
+        tileSize: new google.maps.Size(256, 256),
+        opacity: 1, // Opacidade fixa
+        name: 'Flood Data: Limite RS',
+        crossOrigin: 'anonymous', // Adicionado para CORS
+    });
+
     // Event Listeners
     google.maps.event.addListener(marker, 'mouseover', function () {
         const position = marker.getPosition();
@@ -162,15 +167,8 @@ function showMarkerInfo(position, markerInstance) {
         }
     });
 
-    // Use HTTPS na API URL se necessário
-    //const apiUrl = `https://c243-2804-7f0-b2c0-3493-9355-7ab5-acbc-2465.ngrok-free.app/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
-    //const apiUrl = `https://d347-2804-7f0-b2c0-3493-3049-ec10-7c65-1a3.ngrok-free.app/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
-
-    //const apiUrl = `https://1fff7e0bdb827a62ce2bc89fe3e7c90f.serveo.net/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
     const apiUrl = `https://meuapinasa2024.sa.ngrok.io/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
     
-
-
     fetch(apiUrl, {
         headers: {
             'ngrok-skip-browser-warning': '1'
@@ -322,6 +320,21 @@ function togglePrecipitacaoLayer() {
     } else {
         map.overlayMapTypes.forEach((layer, index) => {
             if (layer === precipitacaoLayer) {
+                map.overlayMapTypes.removeAt(index);
+            }
+        });
+    }
+}
+
+function toggleFloodDataLayer() {
+    const checkbox = document.getElementById('toggleFloodData');
+    if (checkbox.checked) {
+        if (!map.overlayMapTypes.getArray().includes(floodDataLayer)) {
+            map.overlayMapTypes.push(floodDataLayer);
+        }
+    } else {
+        map.overlayMapTypes.forEach((layer, index) => {
+            if (layer === floodDataLayer) {
                 map.overlayMapTypes.removeAt(index);
             }
         });

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Maps with Shapefile Polygon</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1oyZjWlRfRSECC-GtBL2-JR-ioMW70pc&libraries=places,geometry"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={YOUR_API_KEY}&libraries=places,geometry"></script>
     <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
 </head>
 <body>
@@ -40,6 +40,19 @@
             <h3 class="menu-title">Layers Control</h3>
             <!-- Seção de Toggle-switches -->
             <div id="toggle-switches">
+
+
+                <!-- Camada: Limite RS -->
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggleFloodData" onchange="toggleFloodDataLayer()">
+                        <span class="slider"></span>
+                    </label>
+                    <span>Rio Grande do Sul State</span>
+                </div>
+    
+
+
                 <!-- Camada: Hospitais -->
                 <div class="toggle-container">
                     <label class="toggle-switch">
