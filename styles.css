@@ -32,7 +32,7 @@ main {
 }
 
 #address {
-    width: 300px; /* Ajuste a largura conforme necessário */
+    width: 500px; /* Ajuste a largura conforme necessário */
     padding: 10px;
     margin-right: 10px;
     font-size: 16px;
@@ -134,7 +134,7 @@ input:checked + .slider:before {
 /* Estilo para o botão de camadas */
 #layer-button {
     position: absolute;
-    bottom: 110px; /* Ajuste para posicionar acima da escala de cores */
+    bottom: 50px; /* Ajuste para posicionar acima da escala de cores */
     left: 20px;
     background-color: transparent;
     border: none;
@@ -143,8 +143,8 @@ input:checked + .slider:before {
 }
 
 #layer-button img {
-    width: 40px; /* Tamanho do ícone */
-    height: 40px;
+    width: 60px; /* Tamanho do ícone */
+    height: 60px;
 }
 
 /* Estilo para o menu suspenso */
@@ -154,11 +154,12 @@ input:checked + .slider:before {
     bottom: 140px; /* Ajustar para posicionar acima do botão */
     left: 20px;
     background-color: white;
-    border: 1px solid #ccc;
+    border: 5px solid #ccc;
     padding: 10px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     border-radius: 5px;
     z-index: 1000; /* Colocar acima de outros elementos */
+    font-size: 20px; /* Aumenta o tamanho da fonte */
 }
 
 .layer-menu .toggle-container {
@@ -168,7 +169,7 @@ input:checked + .slider:before {
 /* Estilo para o botão de ponto */
 #point-button {
     position: absolute;
-    bottom: 220px; /* Ajuste para posicionar acima do menu de camadas */
+    bottom: 200px; /* Ajuste para posicionar acima do menu de camadas */
     left: 20px;
     background-color: transparent;
     border: none;
@@ -177,14 +178,14 @@ input:checked + .slider:before {
 }
 
 #point-button img {
-    width: 40px; /* Tamanho do ícone */
-    height: 40px;
+    width: 60px; /* Tamanho do ícone */
+    height: 60px;
 }
 
 /* Estilo para o botão de opacity */
 #opacity-button {
     position: absolute;
-    bottom: 165px; /* Ajuste para posicionar acima do menu de camadas */
+    bottom: 125px; /* Ajuste para posicionar acima do menu de camadas */
     left: 20px;
     background-color: transparent;
     border: none;
@@ -193,23 +194,24 @@ input:checked + .slider:before {
 }
 
 #opacity-button img {
-    width: 40px; /* Tamanho do ícone */
-    height: 40px;
+    width: 60px; /* Tamanho do ícone */
+    height: 60px;
 }
 
 /* styles.css */
 
 .opacity-controls {
-    display: none;
+    display: none; /* Inicialmente escondido */
     position: absolute;
-    top: 50px;
-    right: 100px;
-    background: rgba(255, 255, 255, 0.9);
+    bottom: 140px; /* Ajustar para posicionar acima do botão */
+    left: 20px;
+    background-color: white;
+    border: 5px solid #ccc;
     padding: 10px;
-    border: 1px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     border-radius: 5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000; /* Garantir que fique acima de outros elementos */
+    z-index: 1000; /* Colocar acima de outros elementos */
+    font-size: 20px; /* Aumenta o tamanho da fonte */
 }
 
 /* Opcional: Estilos adicionais para sliders e labels */
@@ -217,10 +219,10 @@ input:checked + .slider:before {
     margin-bottom: 10px;
 }
 
+
 .opacity-container label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin-bottom: 5px;   
 }
 
 .opacity-container input[type="range"] {
@@ -231,7 +233,7 @@ input:checked + .slider:before {
 /* Estilo para a nova escala de cores */
 #color-scale-geo {
     position: absolute;
-    bottom: 500px; /* Ajuste conforme necessário para posicionar corretamente */
+    bottom: 490px; /* Ajuste conforme necessário para posicionar corretamente */
     right: 20px;
     background-color: white;
     padding: 10px;
@@ -268,7 +270,7 @@ input:checked + .slider:before {
 /* Estilo para a escala de cores de precipitação */
 #color-scale-precipitation {
     position: absolute;
-    bottom: 400px; /* Ajuste conforme necessário para posicionar corretamente */
+    bottom: 380px; /* Ajuste conforme necessário para posicionar corretamente */
     right: 20px;
     background-color: white;
     padding: 10px;
@@ -300,7 +302,7 @@ input:checked + .slider:before {
 /* Estilo para a escala de cores categórica */
 #color-scale-categorical {
     position: absolute;
-    bottom: 210px; /* Ajuste conforme necessário */
+    bottom: 200px; /* Ajuste conforme necessário */
     right: 20px;
     background-color: white;
     padding: 10px;
@@ -346,4 +348,13 @@ input:checked + .slider:before {
 
 #color-labels-categorical::-webkit-scrollbar-thumb:hover {
     background-color: #555; /* Cor da barra de rolagem ao passar o mouse */
+}
+
+
+
+.menu-title-legend {
+    margin: 0 10px 0 0; /* Espaçamento à direita do título */
+    font-size: 18px;
+    color: #333;
+    white-space: nowrap; /* Evita quebra de linha no título */
 }

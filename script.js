@@ -10,9 +10,12 @@ let elevacaoLayer; // Variável para a camada elevacao_cropped
 let precipitacaoLayer; // Variável para a camada de precipitação
 let hospitalsMarkers = []; // Armazenar os marcadores de hospitais
 let isPointMode = false; // Variável para controlar o modo de ponto
-//const wmsUrl = 'http://localhost:8080/geoserver/wms'; // URL do GeoServer
-const wmsUrl = 'https://c243-2804-7f0-b2c0-3493-9355-7ab5-acbc-2465.ngrok-free.app/geoserver/wms'; // URL do GeoServer
 
+// URL do GeoServer via ngrok com HTTPS
+//const wmsUrl = 'http://localhost:3000/geoserver/wms';
+//const wmsUrl = 'http://localhost:8080/geoserver/wms'; // URL do GeoServer
+//const wmsUrl = 'https://c243-2804-7f0-b2c0-3493-9355-7ab5-acbc-2465.ngrok-free.app/geoserver/wms';
+const wmsUrl = 'https://f5dc5b632501f5b2140dbeac3a12f431.serveo.net/geoserver/wms';
 
 
 function initMap() {
@@ -27,106 +30,76 @@ function initMap() {
         draggable: false,
     });
 
-    // Inicializar a camada WMS
+    // Função para gerar URLs WMS com debug
+    function getWmsUrl(layerName, style = '') {
+        return function (coord, zoom) {
+            const proj = map.getProjection();
+            const zfactor = Math.pow(2, zoom);
+            const top = proj.fromPointToLatLng(
+                new google.maps.Point((coord.x * 256) / zfactor, (coord.y * 256) / zfactor)
+            );
+            const bot = proj.fromPointToLatLng(
+                new google.maps.Point(((coord.x + 1) * 256) / zfactor, ((coord.y + 1) * 256) / zfactor)
+            );
+            const bbox = `${top.lng()},${bot.lat()},${bot.lng()},${top.lat()}`;
+
+            const url = `${wmsUrl}?service=WMS&version=1.1.0&request=GetMap&layers=flood_data:${layerName}&styles=${style}&bbox=${bbox}&width=256&height=256&srs=EPSG:4326&format=image/png&transparent=true`;
+            console.log(`WMS URL for layer ${layerName}: ${url}`); // Debug
+            return url;
+        };
+    }
+
+    // Inicializar camadas WMS com crossOrigin
     wmsLayer = new google.maps.ImageMapType({
-        getTileUrl: function (coord, zoom) {
-            const proj = map.getProjection();
-            const zfactor = Math.pow(2, zoom);
-            const top = proj.fromPointToLatLng(
-                new google.maps.Point((coord.x * 256) / zfactor, (coord.y * 256) / zfactor)
-            );
-            const bot = proj.fromPointToLatLng(
-                new google.maps.Point(((coord.x + 1) * 256) / zfactor, ((coord.y + 1) * 256) / zfactor)
-            );
-            const bbox = `${top.lng()},${bot.lat()},${bot.lng()},${top.lat()}`;
-
-            return `${wmsUrl}?service=WMS&version=1.1.0&request=GetMap&layers=flood_data:ModelAverage_Enchente_v2&styles=&bbox=${bbox}&width=256&height=256&srs=EPSG:4326&format=image/png&transparent=true`;
-        },
+        getTileUrl: getWmsUrl('ModelAverage_Enchente_v2'),
         tileSize: new google.maps.Size(256, 256),
         opacity: 0.6,
+        name: 'Flood Probability',
+        crossOrigin: 'anonymous', // Adicionado para CORS
     });
 
-    // Inicializar a camada UC_RS
     ucRsLayer = new google.maps.ImageMapType({
-        getTileUrl: function (coord, zoom) {
-            const proj = map.getProjection();
-            const zfactor = Math.pow(2, zoom);
-            const top = proj.fromPointToLatLng(
-                new google.maps.Point((coord.x * 256) / zfactor, (coord.y * 256) / zfactor)
-            );
-            const bot = proj.fromPointToLatLng(
-                new google.maps.Point(((coord.x + 1) * 256) / zfactor, ((coord.y + 1) * 256) / zfactor)
-            );
-            const bbox = `${top.lng()},${bot.lat()},${bot.lng()},${top.lat()}`;
-
-            return `${wmsUrl}?service=WMS&version=1.1.0&request=GetMap&layers=flood_data:uc_rs&styles=&bbox=${bbox}&width=256&height=256&srs=EPSG:4326&format=image/png&transparent=true`;
-        },
+        getTileUrl: getWmsUrl('uc_rs'),
         tileSize: new google.maps.Size(256, 256),
         opacity: 0.6,
+        name: 'UC_RS',
+        crossOrigin: 'anonymous', // Adicionado para CORS
     });
 
-    // Inicializar a camada Mapbiomas_RS
     mapbiomasLayer = new google.maps.ImageMapType({
-        getTileUrl: function (coord, zoom) {
-            const proj = map.getProjection();
-            const zfactor = Math.pow(2, zoom);
-            const top = proj.fromPointToLatLng(
-                new google.maps.Point((coord.x * 256) / zfactor, (coord.y * 256) / zfactor)
-            );
-            const bot = proj.fromPointToLatLng(
-                new google.maps.Point(((coord.x + 1) * 256) / zfactor, ((coord.y + 1) * 256) / zfactor)
-            );
-            const bbox = `${top.lng()},${bot.lat()},${bot.lng()},${top.lat()}`;
-
-            return `${wmsUrl}?service=WMS&version=1.1.0&request=GetMap&layers=flood_data:Mapbiomas_RS_v2&styles=&bbox=${bbox}&width=256&height=256&srs=EPSG:4326&format=image/png&transparent=true`;
-        },
+        getTileUrl: getWmsUrl('Mapbiomas_RS_v2'),
         tileSize: new google.maps.Size(256, 256),
         opacity: 0.6,
+        name: 'Mapbiomas_RS',
+        crossOrigin: 'anonymous', // Adicionado para CORS
     });
 
-    // Inicializar a camada elevacao_cropped
     elevacaoLayer = new google.maps.ImageMapType({
-        getTileUrl: function (coord, zoom) {
-            const proj = map.getProjection();
-            const zfactor = Math.pow(2, zoom);
-            const top = proj.fromPointToLatLng(
-                new google.maps.Point((coord.x * 256) / zfactor, (coord.y * 256) / zfactor)
-            );
-            const bot = proj.fromPointToLatLng(
-                new google.maps.Point(((coord.x + 1) * 256) / zfactor, ((coord.y + 1) * 256) / zfactor)
-            );
-            const bbox = `${top.lng()},${bot.lat()},${bot.lng()},${top.lat()}`;
-
-            return `${wmsUrl}?service=WMS&version=1.1.0&request=GetMap&layers=flood_data:elevacao_cropped&styles=&bbox=${bbox}&width=256&height=256&srs=EPSG:4326&format=image/png&transparent=true`;
-        },
+        getTileUrl: getWmsUrl('elevacao_cropped'),
         tileSize: new google.maps.Size(256, 256),
         opacity: 0.6,
+        name: 'Elevation',
+        crossOrigin: 'anonymous', // Adicionado para CORS
     });
 
-    // Inicializar a camada de Precipitação
     precipitacaoLayer = new google.maps.ImageMapType({
-        getTileUrl: function (coord, zoom) {
-            const proj = map.getProjection();
-            const zfactor = Math.pow(2, zoom);
-            const top = proj.fromPointToLatLng(
-                new google.maps.Point((coord.x * 256) / zfactor, (coord.y * 256) / zfactor)
-            );
-            const bot = proj.fromPointToLatLng(
-                new google.maps.Point(((coord.x + 1) * 256) / zfactor, ((coord.y + 1) * 256) / zfactor)
-            );
-            const bbox = `${top.lng()},${bot.lat()},${bot.lng()},${top.lat()}`;
-
-            return `${wmsUrl}?service=WMS&version=1.1.0&request=GetMap&layers=flood_data:precipitacao&styles=precipitacao_blue_ramp_style&bbox=${bbox}&width=256&height=256&srs=EPSG:4326&format=image/png&transparent=true`;
-        },
+        getTileUrl: getWmsUrl('precipitacao', 'precipitacao_blue_ramp_style'),
         tileSize: new google.maps.Size(256, 256),
         opacity: 0.6,
+        name: 'Precipitation',
+        crossOrigin: 'anonymous', // Adicionado para CORS
     });
 
     // Inicializar a camada GeoJSON
     geoJsonLayer = new google.maps.Data({ map: null });
 
     fetch('shape_rs_enchentes_v2.geojson')
-        .then((response) => response.json())
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then((data) => {
             floodPolygons = data.features.map((feature) => feature.geometry);
             geoJsonLayer.addGeoJson(data);
@@ -137,8 +110,12 @@ function initMap() {
                 strokeWeight: 1,
                 fillOpacity: parseFloat(document.getElementById('geoJsonOpacity').value),
             });
+        })
+        .catch((error) => {
+            console.error('Erro ao carregar GeoJSON:', error);
         });
 
+    // Event Listeners
     google.maps.event.addListener(marker, 'mouseover', function () {
         const position = marker.getPosition();
         showMarkerInfo(position, marker);
@@ -149,10 +126,10 @@ function initMap() {
 
         if (isPointMode) {
             map.setOptions({ draggableCursor: 'crosshair' });
-            alert('Clique no mapa para adicionar um marcador.');
+            alert('Click on the map to add a marker.');
         } else {
             map.setOptions({ draggableCursor: 'default' });
-            alert('Modo de busca reativado.');
+            alert('Search mode reactivated.');
         }
     });
 
@@ -184,12 +161,26 @@ function showMarkerInfo(position, markerInstance) {
         }
     });
 
-    //const apiUrl = `http://127.0.0.1:5000/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
-    const apiUrl = `https://d347-2804-7f0-b2c0-3493-3049-ec10-7c65-1a3.ngrok-free.app/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
+    // Use HTTPS na API URL se necessário
+    //const apiUrl = `https://c243-2804-7f0-b2c0-3493-9355-7ab5-acbc-2465.ngrok-free.app/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
+    //const apiUrl = `https://d347-2804-7f0-b2c0-3493-3049-ec10-7c65-1a3.ngrok-free.app/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
+
+    const apiUrl = `https://302061e7e373f7295bd0bca64244cf26.serveo.net/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
 
     
-    fetch(apiUrl)
-        .then((response) => response.json())
+
+
+    fetch(apiUrl, {
+        headers: {
+            'ngrok-skip-browser-warning': '1'
+        }
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then((data) => {
             const pixelValues = data.pixel_values;
             const elevation = pixelValues['elevacao'];
@@ -218,25 +209,25 @@ function showMarkerInfo(position, markerInstance) {
                     }
 
                     const floodStatus = isInsideFloodPolygon
-                        ? 'DENTRO da mancha de enchente'
-                        : `FORA da mancha de enchente (Distância: ${nearestDistance.toFixed(
+                        ? 'WITHIN the flood spot'
+                        : `OUTSIDE the flood spot (Distance:: ${nearestDistance.toFixed(
                               2
-                          )} metros do ponto mais próximo da mancha de enchente)`;
+                          )} meters from the nearest point of the flood spot)`;
 
                     const contentString = `
-                        <strong>Endereço:</strong> ${results[0].formatted_address}</br>
-                        <strong>Rua:</strong> ${street}</br>
-                        <strong>Número:</strong> ${number}</br>
-                        <strong>Bairro:</strong> ${neighborhood}</br>
-                        <strong>Cidade:</strong> ${city}</br>
-                        <strong>CEP:</strong> ${postalCode}</br>
+                        <strong>Address:</strong> ${results[0].formatted_address}</br>
+                        <strong>Street:</strong> ${street}</br>
+                        <strong>Number:</strong> ${number}</br>
+                        <strong>Neighborhood:</strong> ${neighborhood}</br>
+                        <strong>City:</strong> ${city}</br>
+                        <strong>ZIP Code:</strong> ${postalCode}</br>
                         <strong>Latitude:</strong> ${position.lat().toFixed(6)}</br>
                         <strong>Longitude:</strong> ${position.lng().toFixed(6)}</br>
                         <strong>Status:</strong> ${floodStatus}</br>
-                        <strong>Probabilidade de enchente:</strong> ${floodProbability}%</br>
-                        <strong>Elevação:</strong> ${elevation} metros</br>
-                        <strong>Precipitação:</strong> ${precipitation} mm</br>
-                        <strong>Uso do Solo:</strong> ${landUse}</br>
+                        <strong>Flood probability:</strong> ${floodProbability}%</br>
+                        <strong>Elevation:</strong> ${elevation} meters</br>
+                        <strong>Precipitation:</strong> ${precipitation} mm</br>
+                        <strong>Land Use:</strong> ${landUse}</br>
                     `;
 
                     const infowindow = new google.maps.InfoWindow({
@@ -245,6 +236,10 @@ function showMarkerInfo(position, markerInstance) {
                     infowindow.open(map, markerInstance);
                 }
             });
+        })
+        .catch((error) => {
+            console.error('Erro ao buscar dados da API:', error);
+            alert('Houve um problema ao buscar os dados da API.');
         });
 }
 
@@ -336,7 +331,12 @@ function toggleHospitalsLayer() {
     const checkbox = document.getElementById('toggleHospitals');
     if (checkbox.checked) {
         fetch('hospitals.geojson')
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then((data) => {
                 data.features.forEach((feature) => {
                     const coords = feature.geometry.coordinates;
@@ -349,6 +349,8 @@ function toggleHospitalsLayer() {
                             url: 'hospital.png',
                             scaledSize: new google.maps.Size(65, 65),
                         },
+                        title: feature.properties.name || 'Hospital', // Adicionado título para melhor acessibilidade
+                        // Note: Google Maps Markers não suportam a propriedade crossOrigin diretamente
                     });
 
                     google.maps.event.addListener(hospitalMarker, 'mouseover', function () {
@@ -357,6 +359,9 @@ function toggleHospitalsLayer() {
 
                     hospitalsMarkers.push(hospitalMarker);
                 });
+            })
+            .catch((error) => {
+                console.error('Erro ao carregar hospitals.geojson:', error);
             });
     } else {
         hospitalsMarkers.forEach((marker) => marker.setMap(null));
@@ -456,7 +461,7 @@ window.addEventListener('click', function (event) {
     if (
         !layerMenu.contains(event.target) &&
         event.target.id !== 'layer-button' &&
-        event.target.parentElement.id !== 'layer-button'
+        (event.target.parentElement ? event.target.parentElement.id !== 'layer-button' : true)
     ) {
         layerMenu.style.display = 'none';
     }
@@ -465,10 +470,9 @@ window.addEventListener('click', function (event) {
     if (
         !opacityControls.contains(event.target) &&
         event.target.id !== 'opacity-button' &&
-        event.target.parentElement.id !== 'opacity-button'
+        (event.target.parentElement ? event.target.parentElement.id !== 'opacity-button' : true)
     ) {
         opacityControls.style.display = 'none';
     }
 });
-
 window.onload = initMap;
