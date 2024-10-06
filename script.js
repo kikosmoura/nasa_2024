@@ -139,6 +139,19 @@ function initMap() {
         }
     });
 
+    // Evento para o botão de Instruções
+    document.getElementById('instructions-button').addEventListener('click', function () {
+        const instructionsBox = document.getElementById('instructions-box');
+        if (instructionsBox.style.display === 'none' || instructionsBox.style.display === '') {
+            instructionsBox.style.display = 'block';
+        } else {
+            instructionsBox.style.display = 'none';
+        }
+    });
+
+    // Ajustar a posição do menu de camadas e opacidade para não sobrepor as novas adições
+    // Se necessário, ajuste os valores de 'bottom' nos botões no CSS
+
     map.addListener('click', function (event) {
         if (isPointMode) {
             marker.setPosition(event.latLng);
@@ -169,6 +182,7 @@ function showMarkerInfo(position, markerInstance) {
 
     const apiUrl = `https://meuapinasa2024.sa.ngrok.io/get_pixel_value?lat=${position.lat()}&lon=${position.lng()}`;
     
+
     fetch(apiUrl, {
         headers: {
             'ngrok-skip-browser-warning': '1'
@@ -213,21 +227,24 @@ function showMarkerInfo(position, markerInstance) {
                               2
                           )} meters from the nearest point of the flood spot)`;
 
-                    const contentString = `
-                        <strong>Address:</strong> ${results[0].formatted_address}</br>
-                        <strong>Street:</strong> ${street}</br>
-                        <strong>Number:</strong> ${number}</br>
-                        <strong>Neighborhood:</strong> ${neighborhood}</br>
-                        <strong>City:</strong> ${city}</br>
-                        <strong>ZIP Code:</strong> ${postalCode}</br>
-                        <strong>Latitude:</strong> ${position.lat().toFixed(6)}</br>
-                        <strong>Longitude:</strong> ${position.lng().toFixed(6)}</br>
-                        <strong>Status:</strong> ${floodStatus}</br>
-                        <strong>Flood probability:</strong> ${floodProbability}%</br>
-                        <strong>Elevation:</strong> ${elevation} meters</br>
-                        <strong>Precipitation:</strong> ${precipitation} mm</br>
-                        <strong>Land Use:</strong> ${landUse}</br>
-                    `;
+                          const contentString = `
+                          <div style="font-size: 18px; line-height: 1.5;">
+                              <strong>Address:</strong> ${results[0].formatted_address}<br/>
+                              <strong>Street:</strong> ${street}<br/>
+                              <strong>Number:</strong> ${number}<br/>
+                              <strong>Neighborhood:</strong> ${neighborhood}<br/>
+                              <strong>City:</strong> ${city}<br/>
+                              <strong>ZIP Code:</strong> ${postalCode}<br/>
+                              <strong>Latitude:</strong> ${position.lat().toFixed(6)}<br/>
+                              <strong>Longitude:</strong> ${position.lng().toFixed(6)}<br/>
+                              <strong>Status:</strong> ${floodStatus}<br/>
+                              <strong>Flood probability:</strong> ${floodProbability}%<br/>
+                              <strong>Elevation:</strong> ${elevation.toFixed(2)} meters<br/>
+                              <strong>Precipitation:</strong> ${precipitation.toFixed(2)} mm<br/>
+                              <strong>Land Use:</strong> ${landUse}<br/>
+                          </div>
+                      `;
+                      
 
                     const infowindow = new google.maps.InfoWindow({
                         content: contentString,
@@ -468,8 +485,10 @@ document.getElementById('opacity-button').addEventListener('click', function (ev
 window.addEventListener('click', function (event) {
     const layerMenu = document.getElementById('layer-menu');
     const opacityControls = document.getElementById('opacity-controls');
+    const instructionsBox = document.getElementById('instructions-box');
     const layerButton = document.getElementById('layer-button');
     const opacityButton = document.getElementById('opacity-button');
+    const instructionsButton = document.getElementById('instructions-button');
 
     // Verifica se o clique não foi no layer-button ou dentro do layer-menu
     if (
@@ -487,6 +506,15 @@ window.addEventListener('click', function (event) {
         (event.target.parentElement ? event.target.parentElement.id !== 'opacity-button' : true)
     ) {
         opacityControls.style.display = 'none';
+    }
+
+    // Verifica se o clique não foi no instructions-button ou dentro do instructions-box
+    if (
+        !instructionsBox.contains(event.target) &&
+        event.target.id !== 'instructions-button' &&
+        (event.target.parentElement ? event.target.parentElement.id !== 'instructions-button' : true)
+    ) {
+        instructionsBox.style.display = 'none';
     }
 });
 window.onload = initMap;
